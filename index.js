@@ -5,15 +5,17 @@ require('dotenv').config({
 })
 
 const path = require('path')
+const fs = require('fs')
 
 const readRecursive = require('./read-recursive-files')
+const findFile = require('find-in-files');
 
 const targetDirectory = process.env.TARGET_DIRECTORY
 
 
 readRecursive(`${targetDirectory}/src/v1`, (err, files) => {
       if(err) 
-        console.log(err)
+        
 
 
     //Files 
@@ -27,8 +29,27 @@ readRecursive(`${targetDirectory}/src/v1`, (err, files) => {
         }
     })
 
-    //Find em todos os arquivos que tenha require(file)
+    // const chunkFiles = []
+    // for (let i = 0; i < (listFiles % 10); i++) {
+    //     chunkFiles.push(listFiles.slice(0,10))
+    // }
 
-    console.log(listFiles)
+    
+    //Find em todos os arquivos que tenha require(file)
+    for (let file of listFiles) {
+        
+        // console.log( targetDirectory)
+        // //Find in project, if there any require with this name
+        findFile.findSync(`require('${file.file}')`, targetDirectory, '.js$')
+        .then((result) => {
+            console.log(result)
+        })
+        .catch(err => {
+            console.error('Nop')
+        })
+
+    }
+
+    // console.log(listFiles)
 
   })
